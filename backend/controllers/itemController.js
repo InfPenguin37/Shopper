@@ -30,11 +30,29 @@ const getItem = async(req, res) => {
 const createItem = async(req, res) => {
     const { title, price, stock } = req.body
 
+    let emptyFields = []
+
+    if (!title) {
+        emptyFields.push('title')
+    }
+
+    if (!price) {
+        emptyFields.push('price')
+    }
+    if (!stock) {
+        emptyFields.push('stock')
+    }
+
+    if (emptyFields.length > 0) {
+        return res.status(400).json({ error: 'Please fill in all the missing fields', emptyFields })
+    }
+
+
     try {
         const item = await Item.create({ title, price, stock })
         res.status(200).json(item)
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        res.status(400).json({ error: error.message, emptyFields })
     }
 }
 
